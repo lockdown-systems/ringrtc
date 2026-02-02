@@ -11,7 +11,7 @@ env:
 jobs:
   build_linux_x64:
     name: Build Linux x64
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-x64
 
     steps:
       - uses: actions/checkout@v4
@@ -84,7 +84,7 @@ jobs:
 
   build_windows:
     name: Build Windows x64
-    runs-on: windows-2022
+    runs-on: windows-x64
 
     steps:
       - uses: actions/checkout@v4
@@ -116,7 +116,7 @@ jobs:
   publish:
     name: Publish to npm
     needs: [build_linux_x64, build_macos, build_windows]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-x64
 
     permissions:
       contents: write # Needed for creating releases
