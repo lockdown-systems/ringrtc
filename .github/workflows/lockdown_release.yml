@@ -120,6 +120,7 @@ jobs:
 
     permissions:
       contents: write # Needed for creating releases
+      id-token: write # Needed for npm provenance and trusted publishing
 
     steps:
       - uses: actions/checkout@v4
@@ -128,6 +129,10 @@ jobs:
         with:
           node-version-file: "src/node/.nvmrc"
           registry-url: "https://registry.npmjs.org/"
+
+      # Trusted publishing requires npm 11.5.1+
+      - name: Update npm for trusted publishing
+        run: npm install -g npm@latest
 
       # Download all build artifacts
       - name: Download Linux x64 build
@@ -177,25 +182,24 @@ jobs:
         with:
           files: src/node/ringrtc-desktop-build-v${{ steps.version.outputs.version }}.tar.gz
           generate_release_notes: true
+          fail_on_unmatched_files: true
 
-      # Update package.json with checksum
-      - name: Update prebuild checksum
-        run: |
-          sed -i 's/"prebuildChecksum": ""/"prebuildChecksum": "${{ steps.checksum.outputs.sha256 }}"/' package.json
-        working-directory: src/node
-
-      # Install and build
+      # Install and build (skip install scripts - we already have the prebuilt binaries)
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
         working-directory: src/node
 
       - name: Build TypeScript
         run: npm run build
         working-directory: src/node
 
+      # Update package.json with checksum after build
+      - name: Update prebuild checksum
+        run: |
+          npm pkg set config.prebuildChecksum="${{ steps.checksum.outputs.sha256 }}"
+        working-directory: src/node
+
       # Publish to npm
       - name: Publish to npm
-        run: npm publish --access public
+        run: npm publish --access public --provenance --tag audiosink
         working-directory: src/node
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
