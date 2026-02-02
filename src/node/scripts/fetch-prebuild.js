@@ -37,7 +37,7 @@ if (process.env.npm_package_json) {
   VERSION = process.env.npm_package_version;
 }
 
-const PREBUILD_URL = config.prebuildUrl.replace(
+const PREBUILD_URL = config.prebuildUrl.replaceAll(
   '${npm_package_version}', // eslint-disable-line no-template-curly-in-string
   VERSION
 );
