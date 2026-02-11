@@ -1,5 +1,21 @@
 # Changelog
 
+## v2.64.1
+
+- Fix bug in starting peek after receiving device_joined_or_left
+
+## v2.64.0
+
+- Update to webrtc 7444f
+  - Send DTX TOC only in lieu of refresh packets
+  - Update logging in connection.cc to log ICE failures
+
+- Desktop: Rename rttMedianConnection to rttMedianConnectionMillis survey field
+
+- iOS: Add ifdef'd support for video file input
+
+- Call Sim: Minor improvements and fixes
+
 ## v2.63.0
 
 - Desktop: Always disable mic and camera on call end
